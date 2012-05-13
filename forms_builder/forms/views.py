@@ -91,6 +91,10 @@ class FormDetailView(object):
         email_to = form_for_form.email_to()
         context = self.email_context(request, form, form_for_form)
 
+        if SEND_FROM_SUBMITTER:
+            # Send from the email entered.
+            email_from = email_to
+
         if email_to and form.send_email:
             self.send_email(
                 subject,
@@ -102,10 +106,8 @@ class FormDetailView(object):
 
         email_copies = [e.strip() for e in form.email_copies.split(",")
                         if e.strip()]
-        if email_copies:
-            if email_to and SEND_FROM_SUBMITTER:
-                # Send from the email entered.
-                email_from = email_to
+
+        for email_to in email_copies:
 
             self.send_email(
                 subject,
